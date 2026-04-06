@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lio Party – Login</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Safe font stack - works without internet */
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --font-display: 'Syne', 'Segoe UI', Arial, sans-serif;
+    --font-body: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+    --bg1: #0a0414;
+    --bg2: #0d0a2e;
+    --bg3: #0c1a3a;
+    --purple: #7c3aed;
+    --violet: #6d28d9;
+    --indigo: #4f46e5;
+    --neon: #a78bfa;
+    --neon2: #818cf8;
+    --glow: #c4b5fd;
+    --glass-bg: rgba(255,255,255,0.04);
+    --glass-border: rgba(167,139,250,0.18);
+    --text: #f1f0ff;
+    --muted: #9490b5;
+    --input-bg: rgba(255,255,255,0.06);
+  }
+
+  html, body {
+    min-height: 100%;
+    background: #0a0414;
+  }
+
+  body {
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* Full-screen gradient bg */
+  .screen {
+    width: 100%;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 70% 50% at 20% -10%, rgba(109,40,217,0.55) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 85% 100%, rgba(79,70,229,0.45) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 50% 50%, rgba(12,26,58,0.7) 0%, transparent 80%),
+      linear-gradient(160deg, #0a0414 0%, #0d0a2e 40%, #0c1a3a 100%);
+    position: relative;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 24px 40px;
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+  .orb1 {
+    width: 220px; height: 220px;
+    background: rgba(109,40,217,0.35);
+    top: -60px; left: -60px;
+    animation-delay: 0s;
+  }
+  .orb2 {
+    width: 180px; height: 180px;
+    background: rgba(79,70,229,0.3);
+    bottom: 20px; right: -50px;
+    animation-delay: -3s;
+  }
+  .orb3 {
+    width: 120px; height: 120px;
+    background: rgba(167,139,250,0.18);
+    top: 10%; left: 10%;
+    animation-delay: -5s;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes drift {
+    0% { transform: translate(0,0) scale(1); }
+    100% { transform: translate(20px,15px) scale(1.08); }
+  }
+
+  /* Stars */
+  .stars {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.1; }
+    100% { opacity: 0.7; }
+  }
+
+  /* ─── CARD ─── */
+  .card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 342px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: 36px 28px 32px;
+    box-shadow:
+      0 0 0 1px rgba(167,139,250,0.08),
+      0 32px 80px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.07);
+    animation: cardIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ─── LOGO ─── */
+  .logo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.1s both;
+  }
+  .logo-icon {
+    width: 80px; height: 80px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #2d1b69 0%, #1e1b4b 40%, #1a2c5e 100%);
+    border: 1.5px solid rgba(167,139,250,0.3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    box-shadow:
+      0 0 30px rgba(124,58,237,0.6),
+      0 0 60px rgba(99,102,241,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .logo-icon::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 40% 35%, rgba(167,139,250,0.2), transparent 65%);
+    border-radius: inherit;
+  }
+
+  /* Mic SVG inside logo */
+  .logo-svg {
+    position: relative; z-index: 1;
+  }
+
+  /* Sound wave rings */
+  .wave-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(167,139,250,0.35);
+    animation: wavePulse 2s ease-out infinite;
+  }
+  .wave-ring:nth-child(1) { width: 36px; height: 36px; animation-delay: 0s; }
+  .wave-ring:nth-child(2) { width: 52px; height: 52px; animation-delay: 0.4s; opacity: 0.6; }
+  .wave-ring:nth-child(3) { width: 68px; height: 68px; animation-delay: 0.8s; opacity: 0.3; }
+  @keyframes wavePulse {
+    0%   { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  .app-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-shadow: 0 0 20px rgba(167,139,250,0.5);
+  }
+  .app-tagline {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    animation: fadeUp 0.6s 0.2s both;
+  }
+
+  /* ─── INPUT GROUP ─── */
+  .input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.6s 0.25s both;
+  }
+  .phone-prefix {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(124,58,237,0.18);
+    border: 1px solid rgba(167,139,250,0.25);
+    border-radius: 14px;
+    padding: 0 14px;
+    color: var(--neon);
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .flag { font-size: 16px; }
+
+  input[type="tel"], input[type="number"], input[type="text"] {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid rgba(167,139,250,0.18);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  input::placeholder { color: rgba(148,144,181,0.6); }
+  input:focus {
+    border-color: rgba(167,139,250,0.55);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.15), 0 0 16px rgba(124,58,237,0.1);
+  }
+  /* hide number spinners */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  /* ─── OTP FIELD ─── */
+  .otp-section {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: max-height 0.45s cubic-bezier(0.16,1,0.3,1),
+                opacity 0.35s ease,
+                transform 0.35s ease;
+    pointer-events: none;
+  }
+  .otp-section.visible {
+    max-height: 600px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .otp-wrap {
+    margin-bottom: 6px;
+  }
+  .resend-text {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .resend-text span {
+    color: var(--neon);
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s;
+  }
+  .resend-text span:active { opacity: 0.6; }
+  .otp-row {
+    display: flex; gap: 8px; justify-content: center;
+  }
+  .otp-box {
+    width: 60px; height: 60px;
+    background: var(--input-bg);
+    border: 1.5px solid rgba(167,139,250,0.2);
+    border-radius: 16px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--font-display);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    -webkit-appearance: none;
+    caret-color: var(--neon);
+  }
+  .otp-box:focus {
+    border-color: rgba(167,139,250,0.9);
+    background: rgba(124,58,237,0.12);
+    box-shadow:
+      0 0 0 3px rgba(124,58,237,0.22),
+      0 0 20px rgba(124,58,237,0.25),
+      inset 0 0 10px rgba(167,139,250,0.06);
+  }
+  .otp-box.filled {
+    border-color: rgba(167,139,250,0.6);
+    background: rgba(124,58,237,0.1);
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    color: #fff;
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 40%, #4f46e5 100%);
+    box-shadow:
+      0 0 24px rgba(124,58,237,0.55),
+      0 4px 20px rgba(79,70,229,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .btn-primary:active { transform: scale(0.97); box-shadow: 0 0 12px rgba(124,58,237,0.4); }
+
+  .btn-otp {
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s 0.28s both;
+  }
+  .btn-verify {
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.35s both;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.6s 0.38s both;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(167,139,250,0.2), transparent);
+  }
+  .divider-text {
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── SOCIAL BUTTONS ─── */
+  .btn-social {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(167,139,250,0.2);
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    margin-bottom: 10px;
+  }
+  .btn-social:last-child { margin-bottom: 0; }
+  .btn-social:active { transform: scale(0.97); background: rgba(255,255,255,0.07); }
+  .btn-google { animation: fadeUp 0.6s 0.42s both; }
+  .btn-facebook { animation: fadeUp 0.6s 0.46s both; }
+
+  .social-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+  /* ─── FOOTER ─── */
+  .footer-text {
+    margin-top: 22px;
+    font-size: 11px;
+    color: rgba(148,144,181,0.5);
+    text-align: center;
+    line-height: 1.6;
+    animation: fadeUp 0.6s 0.5s both;
+  }
+  .footer-text a { color: var(--neon); text-decoration: none; }
+
+  /* Success dots */
+  .dot-pulse {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    animation: dotPulse 1s ease-in-out infinite alternate;
+  }
+  @keyframes dotPulse {
+    from { opacity: 0.2; transform: scale(0.8); }
+    to   { opacity: 1;   transform: scale(1.2); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Loading spinner inside button */
+  .btn-spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Success flash */
+  @keyframes flashIn {
+    0%   { opacity: 0; }
+    40%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <!-- Ambient orbs -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- Stars -->
+  <div class="stars" id="stars"></div>
+
+  <!-- Glass Card -->
+  <div class="card">
+
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <!-- Wave rings -->
+        <div class="wave-ring"></div>
+        <div class="wave-ring"></div>
+        <div class="wave-ring"></div>
+        <!-- Mic SVG -->
+        <svg class="logo-svg" width="34" height="38" viewBox="0 0 34 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Glow filter -->
+          <defs>
+            <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Mic body -->
+          <rect x="10" y="1" width="14" height="20" rx="7" fill="url(#micGrad)" filter="url(#glow)"/>
+          <!-- Mic arc -->
+          <path d="M4 18C4 25.732 9.820 32 17 32C24.180 32 30 25.732 30 18" stroke="url(#arcGrad)" stroke-width="2.2" stroke-linecap="round" filter="url(#glow)"/>
+          <!-- Stand -->
+          <line x1="17" y1="32" x2="17" y2="37" stroke="url(#arcGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="11" y1="37" x2="23" y2="37" stroke="url(#arcGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <!-- Sound bars left -->
+          <rect x="1" y="16" width="2.5" height="6" rx="1.2" fill="rgba(167,139,250,0.55)"/>
+          <rect x="4.5" y="14" width="2.5" height="10" rx="1.2" fill="rgba(167,139,250,0.75)"/>
+          <!-- Sound bars right -->
+          <rect x="30.5" y="16" width="2.5" height="6" rx="1.2" fill="rgba(167,139,250,0.55)"/>
+          <rect x="27" y="14" width="2.5" height="10" rx="1.2" fill="rgba(167,139,250,0.75)"/>
+          <defs>
+            <linearGradient id="micGrad" x1="10" y1="1" x2="24" y2="21" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#c4b5fd"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+            <linearGradient id="arcGrad" x1="4" y1="18" x2="30" y2="37" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="app-name">Lio Party</div>
+      <div class="app-tagline">Voice rooms, vibes &amp; connections</div>
+    </div>
+
+    <!-- Phone Input -->
+    <div class="section-label">Phone Number</div>
+    <div class="input-group">
+      <div class="phone-prefix">
+        <span class="flag">🇮🇳</span>
+        <span>+91</span>
+      </div>
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="Enter mobile number" maxlength="10">
+    </div>
+
+    <!-- Send OTP button -->
+    <button class="btn-primary btn-otp" onclick="sendOTP()">Send OTP</button>
+
+    <!-- OTP Section (hidden until Send OTP clicked) -->
+    <div class="otp-section" id="otpSection">
+      <!-- OTP Input -->
+      <div class="otp-wrap">
+        <div class="section-label">Enter OTP</div>
+        <div class="otp-row">
+          <input class="otp-box" type="tel" inputmode="numeric" maxlength="1" placeholder="·">
+          <input class="otp-box" type="tel" inputmode="numeric" maxlength="1" placeholder="·">
+          <input class="otp-box" type="tel" inputmode="numeric" maxlength="1" placeholder="·">
+          <input class="otp-box" type="tel" inputmode="numeric" maxlength="1" placeholder="·">
+        </div>
+      </div>
+      <div class="resend-text">Didn't receive OTP? <span id="resendBtn" onclick="resendOTP()">Resend</span></div>
+
+      <!-- Verify OTP -->
+      <button class="btn-primary btn-verify" onclick="verifyOTP()">Verify &amp; Login →</button>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-text">or sign in with</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Google -->
+    <button class="btn-social btn-google">
+      <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <!-- Facebook -->
+    <button class="btn-social btn-facebook">
+      <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" fill="#1877F2"/>
+      </svg>
+      Continue with Facebook
+    </button>
+
+    <!-- Footer -->
+    <div class="footer-text">
+      By continuing you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>
+    </div>
+
+  </div><!-- /card -->
+</div>
+
+<script>
+  // ── Stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 55; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 1.8 + 0.6;
+    s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s;`;
+    starsEl.appendChild(s);
+  }
+
+  let resendInterval = null;
+
+  function startResendTimer() {
+    let t = 30;
+    const btn = document.getElementById('resendBtn');
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.4';
+    btn.textContent = 'Resend (30s)';
+    resendInterval = setInterval(function() {
+      t--;
+      btn.textContent = 'Resend (' + t + 's)';
+      if (t <= 0) {
+        clearInterval(resendInterval);
+        btn.textContent = 'Resend';
+        btn.style.pointerEvents = 'auto';
+        btn.style.opacity = '1';
+      }
+    }, 1000);
+  }
+
+  function sendOTP() {
+    var phoneInput = document.querySelector('input[type="tel"]');
+    var phone = phoneInput.value.replace(/\D/g, '');
+    if (phone.length < 10) {
+      phoneInput.style.borderColor = 'rgba(239,68,68,0.8)';
+      phoneInput.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
+      setTimeout(function() {
+        phoneInput.style.borderColor = '';
+        phoneInput.style.boxShadow = '';
+      }, 1800);
+      return;
+    }
+
+    var btn = document.querySelector('.btn-otp');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span> Sending...';
+
+    setTimeout(function() {
+      btn.innerHTML = 'OTP Sent ✓';
+      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+      btn.style.boxShadow = '0 0 20px rgba(5,150,105,0.5)';
+      phoneInput.disabled = true;
+      phoneInput.style.opacity = '0.5';
+
+      var section = document.getElementById('otpSection');
+      section.classList.add('visible');
+
+      setTimeout(function() {
+        var boxes = document.querySelectorAll('.otp-box');
+        if (boxes[0]) boxes[0].focus();
+      }, 200);
+
+      startResendTimer();
+    }, 1500);
+  }
+
+  function verifyOTP() {
+    var boxes = document.querySelectorAll('.otp-box');
+    var otp = '';
+    boxes.forEach(function(b) { otp += b.value; });
+
+    if (otp.length < 4) {
+      boxes.forEach(function(b) {
+        if (!b.value) {
+          b.style.borderColor = 'rgba(239,68,68,0.8)';
+          b.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
+        }
+      });
+      setTimeout(function() {
+        boxes.forEach(function(b) { b.style.borderColor = ''; b.style.boxShadow = ''; });
+      }, 1800);
+      return;
+    }
+
+    var btn = document.querySelector('.btn-verify');
+    btn.innerHTML = 'Verified! 🚀';
+    btn.disabled = true;
+    btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    btn.style.boxShadow = '0 0 24px rgba(5,150,105,0.6)';
+
+    setTimeout(function() {
+      document.querySelector('.card').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 0;gap:20px;text-align:center;"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#059669,#047857);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(5,150,105,0.6);font-size:38px;">🚀</div><div style="color:#f1f0ff;font-size:22px;font-weight:800;">Welcome to Lio Party!</div><div style="color:#9490b5;font-size:13px;">Login successful ✓</div></div>';
+    }, 1200);
+  }
+
+  function resendOTP() {
+    var boxes = document.querySelectorAll('.otp-box');
+    boxes.forEach(function(b) { b.value = ''; b.classList.remove('filled'); b.style.borderColor = ''; });
+    if (boxes[0]) boxes[0].focus();
+    startResendTimer();
+  }
+
+  // OTP auto-advance
+  document.addEventListener('DOMContentLoaded', function() {
+    var boxes = document.querySelectorAll('.otp-box');
+    boxes.forEach(function(box, i) {
+      box.addEventListener('input', function() {
+        if (box.value.length > 1) box.value = box.value.slice(-1);
+        box.classList.toggle('filled', box.value.length === 1);
+        if (box.value.length === 1 && i < boxes.length - 1) boxes[i+1].focus();
+      });
+      box.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && box.value === '' && i > 0) {
+          boxes[i-1].value = '';
+          boxes[i-1].classList.remove('filled');
+          boxes[i-1].focus();
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>
