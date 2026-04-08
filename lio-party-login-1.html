@@ -576,126 +576,119 @@
 </div>
 
 <script>
-  // ── Stars
-  const starsEl = document.getElementById('stars');
-  for (let i = 0; i < 55; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() * 1.8 + 0.6;
-    s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s;`;
-    starsEl.appendChild(s);
+const BASE_URL = "http://localhost:3000";
+
+// SEND OTP
+function sendOTP() {
+  var phoneInput = document.getElementById("phone");
+  var phone = "+91" + phoneInput.value;
+
+  if (phoneInput.value.length < 10) {
+    phoneInput.style.borderColor = 'red';
+    return;
   }
 
-  let resendInterval = null;
+  var btn = document.querySelector('.btn-otp');
+  btn.disabled = true;
+  btn.innerHTML = "Sending...";
 
-  function startResendTimer() {
-    let t = 30;
-    const btn = document.getElementById('resendBtn');
-    btn.style.pointerEvents = 'none';
-    btn.style.opacity = '0.4';
-    btn.textContent = 'Resend (30s)';
-    resendInterval = setInterval(function() {
-      t--;
-      btn.textContent = 'Resend (' + t + 's)';
-      if (t <= 0) {
-        clearInterval(resendInterval);
-        btn.textContent = 'Resend';
-        btn.style.pointerEvents = 'auto';
-        btn.style.opacity = '1';
-      }
-    }, 1000);
-  }
-
-  function sendOTP() {
-    var phoneInput = document.querySelector()<input id="phone" type="tel" inputmode="numeric" placeholder="Enter mobile number" maxlength="10">;
-    var phone = phoneInput.value.replace(/\D/g, '');
-    if (phone.length < 10) {
-      phoneInput.style.borderColor = 'rgba(239,68,68,0.8)';
-      phoneInput.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
-      setTimeout(function() {
-        phoneInput.style.borderColor = '';
-        phoneInput.style.boxShadow = '';
-      }, 1800);
-      return;
-    }
-
-    var btn = document.querySelector('.btn-otp');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="btn-spinner"></span> Sending...';
-
-    setTimeout(function() {
-      btn.innerHTML = 'OTP Sent ✓';
-      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
-      btn.style.boxShadow = '0 0 20px rgba(5,150,105,0.5)';
-      phoneInput.disabled = true;
-      phoneInput.style.opacity = '0.5';
-
-      var section = document.getElementById('otpSection');
-      section.classList.add('visible');
-
-      setTimeout(function() {
-        var boxes = document.querySelectorAll('.otp-box');
-        if (boxes[0]) boxes[0].focus();
-      }, 200);
-
+  fetch(BASE_URL + "/send-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ phone })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      btn.innerHTML = "OTP Sent ✓";
+      document.getElementById('otpSection').classList.add('visible');
       startResendTimer();
-    }, 1500);
-  }
-
-  function verifyOTP() {
-    var boxes = document.querySelectorAll('.otp-box');
-    var otp = '';
-    boxes.forEach(function(b) { otp += b.value; });
-
-    if (otp.length < 4) {
-      boxes.forEach(function(b) {
-        if (!b.value) {
-          b.style.borderColor = 'rgba(239,68,68,0.8)';
-          b.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.2)';
-        }
-      });
-      setTimeout(function() {
-        boxes.forEach(function(b) { b.style.borderColor = ''; b.style.boxShadow = ''; });
-      }, 1800);
-      return;
+    } else {
+      alert(data.error);
+      btn.disabled = false;
+      btn.innerHTML = "Send OTP";
     }
+  });
+}
 
-    var btn = document.querySelector('.btn-verify');
-    btn.innerHTML = 'Verified! 🚀';
-    btn.disabled = true;
-    btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
-    btn.style.boxShadow = '0 0 24px rgba(5,150,105,0.6)';
+// VERIFY OTP
+function verifyOTP() {
+  var phone = "+91" + document.getElementById("phone").value;
 
-    setTimeout(function() {
-      document.querySelector('.card').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 0;gap:20px;text-align:center;"><div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#059669,#047857);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(5,150,105,0.6);font-size:38px;">🚀</div><div style="color:#f1f0ff;font-size:22px;font-weight:800;">Welcome to Lio Party!</div><div style="color:#9490b5;font-size:13px;">Login successful ✓</div></div>';
-    }, 1200);
+  var boxes = document.querySelectorAll('.otp-box');
+  var code = '';
+  boxes.forEach(b => code += b.value);
+
+  if (code.length < 4) {
+    alert("Enter OTP");
+    return;
   }
 
-  function resendOTP() {
-    var boxes = document.querySelectorAll('.otp-box');
-    boxes.forEach(function(b) { b.value = ''; b.classList.remove('filled'); b.style.borderColor = ''; });
-    if (boxes[0]) boxes[0].focus();
-    startResendTimer();
-  }
+  fetch(BASE_URL + "/verify-otp", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ phone, code })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Login Success 🚀");
+    } else {
+      alert("Invalid OTP");
+    }
+  });
+}
 
-  // OTP auto-advance
-  document.addEventListener('DOMContentLoaded', function() {
-    var boxes = document.querySelectorAll('.otp-box');
-    boxes.forEach(function(box, i) {
-      box.addEventListener('input', function() {
-        if (box.value.length > 1) box.value = box.value.slice(-1);
-        box.classList.toggle('filled', box.value.length === 1);
-        if (box.value.length === 1 && i < boxes.length - 1) boxes[i+1].focus();
-      });
-      box.addEventListener('keydown', function(e) {
-        if (e.key === 'Backspace' && box.value === '' && i > 0) {
-          boxes[i-1].value = '';
-          boxes[i-1].classList.remove('filled');
-          boxes[i-1].focus();
-        }
-      });
+// RESEND TIMER
+let resendInterval = null;
+
+function startResendTimer() {
+  let t = 30;
+  const btn = document.getElementById('resendBtn');
+  btn.style.pointerEvents = 'none';
+  btn.style.opacity = '0.4';
+  btn.textContent = 'Resend (30s)';
+
+  resendInterval = setInterval(function() {
+    t--;
+    btn.textContent = 'Resend (' + t + 's)';
+
+    if (t <= 0) {
+      clearInterval(resendInterval);
+      btn.textContent = 'Resend';
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '1';
+    }
+  }, 1000);
+}
+
+// RESEND OTP
+function resendOTP() {
+  sendOTP();
+}
+
+// OTP AUTO MOVE
+document.addEventListener('DOMContentLoaded', function() {
+  var boxes = document.querySelectorAll('.otp-box');
+
+  boxes.forEach(function(box, i) {
+    box.addEventListener('input', function() {
+      if (box.value.length > 1) box.value = box.value.slice(-1);
+
+      if (box.value.length === 1 && i < boxes.length - 1) {
+        boxes[i+1].focus();
+      }
+    });
+
+    box.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && box.value === '' && i > 0) {
+        boxes[i-1].focus();
+      }
     });
   });
+});
 </script>
-</body>
-</html>
