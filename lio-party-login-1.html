@@ -607,7 +607,7 @@
   }
 
   function sendOTP() {
-    var phoneInput = document.querySelector('input[type="tel"]');
+    var phoneInput = document.querySelector()<input id="phone" type="tel" inputmode="numeric" placeholder="Enter mobile number" maxlength="10">;
     var phone = phoneInput.value.replace(/\D/g, '');
     if (phone.length < 10) {
       phoneInput.style.borderColor = 'rgba(239,68,68,0.8)';
